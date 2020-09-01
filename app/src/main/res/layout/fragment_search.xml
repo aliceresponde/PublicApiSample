@@ -5,6 +5,9 @@
 
     <data>
 
+        <variable
+            name="viewModel"
+            type="com.aliceresponde.publicapisample.ui.search.SearchViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,6 +27,7 @@
 
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/businessRecycler"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="vertical"
@@ -34,6 +38,15 @@
             app:layout_constraintTop_toBottomOf="@id/spinner"
             tools:itemCount="20"
             tools:listitem="@layout/business_item" />
+
+        <ProgressBar
+            android:id="@+id/loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/spinner" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
