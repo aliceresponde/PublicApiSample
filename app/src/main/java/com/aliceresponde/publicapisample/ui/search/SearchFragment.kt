@@ -3,6 +3,7 @@ package com.aliceresponde.publicapisample.ui.search
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.*
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -62,9 +63,10 @@ class SearchFragment : Fragment() {
                         this@SearchFragment.viewModel.updateSelectedLocation(location)
                     }
                 }
-
                 override fun onNothingSelected(parent: AdapterView<*>?) = Unit
             }
+
+            businessRecycler.adapter = adapter
         }
 
         setupObservers()
@@ -76,11 +78,14 @@ class SearchFragment : Fragment() {
             viewModel.getBusiness(it, this@SearchFragment.isInternetConnected())
         })
 
-        viewModel.viewState.observe(viewLifecycleOwner, Observer {
+        viewModel.viewState.observe(viewLifecycleOwner, EventObserver {
             when (it) {
-                is Loading -> viewModel.showLoading()
-                is ShowData -> viewModel.showData()
-                is NoData -> viewModel.showNoData()
+                is Loading -> showLoading()
+                is ShowData -> {
+                    adapter.update(it.data)
+                    showData()
+                }
+                is NoData -> showNoData()
             }
         })
 
@@ -98,5 +103,23 @@ class SearchFragment : Fragment() {
     private fun navigateToDetail(business: Business) {
         val action = SearchFragmentDirections.actionSearchFragmentToBusinessDetailFragment(business)
         findNavController().navigate(action)
+    }
+
+    private fun showLoading() {
+        binding.loading.visibility = VISIBLE
+        binding.businessRecycler.visibility = GONE
+        binding.noData.visibility = GONE
+    }
+
+    private fun showData() {
+        binding.loading.visibility = GONE
+        binding.businessRecycler.visibility = VISIBLE
+        binding.noData.visibility = GONE
+    }
+
+    private fun showNoData() {
+        binding.loading.visibility = GONE
+        binding.businessRecycler.visibility = GONE
+        binding.noData.visibility = VISIBLE
     }
 }

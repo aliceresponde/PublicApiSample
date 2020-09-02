@@ -28,11 +28,9 @@ class BusinessRepositoryImp(
                     withContext(IO) {
                         val result = response.body()?.businesses ?: listOf()
                         val entities = result.map { dto -> dto.toEntity() }
-
-                        Log.d("TEST",local.insertAll(entities).toString())
-                        Log.d("Count", local.countItems(location).toString())
+                        local.insertAll(entities)
                         val localData = getBusinessListFromCache(location)
-                        val i =3
+                        val i = 3
                         SuccessState(localData)
                     }
                 } else {
@@ -91,8 +89,7 @@ class BusinessRepositoryImp(
         return withContext(IO) { local.getBusinessDetail(id) }
     }
 
-
-    fun BusinessDTO.toEntity(): BusinessEntity = BusinessEntity(
+    private fun BusinessDTO.toEntity(): BusinessEntity = BusinessEntity(
         id = id,
         name = name,
         imageUrl = imageUrl,
@@ -100,7 +97,7 @@ class BusinessRepositoryImp(
         address = location.toString(),
         rating = rating,
         isClosed = isClosed,
-        location = location.country
+        location = location.displayAddress.last()
     )
 
     private fun BusinessDetailResponse.toEntity(): BusinessEntity = BusinessEntity(
@@ -110,6 +107,6 @@ class BusinessRepositoryImp(
         phone = phone,
         rating = rating,
         isClosed = isClosed,
-        location = location.country
+        location = location.displayAddress.last()
     )
 }

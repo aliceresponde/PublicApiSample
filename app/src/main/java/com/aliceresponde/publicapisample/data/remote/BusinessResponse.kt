@@ -20,7 +20,10 @@ data class BusinessDTO(
         val address1: String,
         val city: String,
         val state: String,
-        val country: String
+        val country: String,
+        @SerializedName("display_address")
+        val displayAddress: List<String>
+
     ) {
         override fun toString(): String = "$address1 \n $city, $state in ($country)"
     }

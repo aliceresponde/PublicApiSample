@@ -28,7 +28,7 @@ class BusinessDetailFragment : Fragment() {
             name.text = item.name
             image.loadFromUrl(item.imageUrl)
             phone.text = item.phone
-            rating.text = item.rating.toString()
+            rating.text = " ${item.rating}"
             address.text = item.address
             if (item.isClosed)
                 isClosed.loadFromDrawable(R.drawable.ic_close)

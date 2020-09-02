@@ -25,7 +25,6 @@
 
 
         <androidx.recyclerview.widget.RecyclerView
-            android:visibility="@{viewModel.recyclerVisibility}"
             android:id="@+id/businessRecycler"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -40,7 +39,6 @@
 
         <ProgressBar
             android:id="@+id/loading"
-            android:visibility="@{viewModel.loadingVisibility}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -50,7 +48,6 @@
 
         <TextView
             android:id="@+id/noData"
-            android:visibility="@{viewModel.noDataVisibility}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/no_data_to_show"
@@ -58,7 +55,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/businessRecycler"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/spinner" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

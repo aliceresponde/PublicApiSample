@@ -1,7 +1,5 @@
 package com.aliceresponde.publicapisample.ui.search
 
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,8 +11,10 @@ import com.aliceresponde.publicapisample.domain.GetBusinessUseCase
 import com.aliceresponde.publicapisample.domain.UiState.ErrorViewState
 import com.aliceresponde.publicapisample.domain.UiState.SuccessViewState
 import com.aliceresponde.publicapisample.ui.search.SearchViewState.*
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SearchViewModel @ViewModelInject constructor(private val getBusiness: GetBusinessUseCase) :
     ViewModel() {
@@ -24,29 +24,25 @@ class SearchViewModel @ViewModelInject constructor(private val getBusiness: GetB
     private val _selectedLocation = MutableLiveData<Event<String>>()
     val selectedLocation: LiveData<Event<String>> get() = _selectedLocation
 
-    private val _viewState = MutableLiveData<SearchViewState>()
-    val viewState: LiveData<SearchViewState> get() = _viewState
-
-    private val _noDataVisibility = MutableLiveData(GONE)
-    val noDataVisibility: LiveData<Int> get() = _noDataVisibility
-
-    private val _recyclerVisibility = MutableLiveData(GONE)
-    val recyclerVisibility: LiveData<Int> get() = _recyclerVisibility
-
-    private val _loadingVisibility = MutableLiveData(GONE)
-    val loadingVisibility: LiveData<Int> get() = _loadingVisibility
+    private val _viewState = MutableLiveData<Event<SearchViewState>>()
+    val viewState: LiveData<Event<SearchViewState>> get() = _viewState
 
     fun getBusiness(location: String, isInternetConnected: Boolean) {
         viewModelScope.launch(Main) {
-            _viewState.value = Loading
-            when (val response = getBusiness.invoke(location, isInternetConnected)) {
-                is SuccessViewState -> {
-                    _viewState.value =
-                        if (response.data.isEmpty()) NoData
-                        else ShowData(response.data)
-                }
-                is ErrorViewState -> response.data?.let {
-                    _viewState.value = if (it.isEmpty()) NoData else ShowData(it)
+            withContext(IO) {
+                _viewState.postValue(Event(Loading))
+                when (val response = getBusiness.invoke(location, isInternetConnected)) {
+                    is SuccessViewState -> {
+                        _businessData.postValue(Event(response.data))
+                        _viewState.postValue(
+                            if (response.data.isEmpty()) Event(NoData)
+                            else Event(ShowData(response.data))
+                        )
+                    }
+                    is ErrorViewState -> response.data?.let {
+                        _viewState.postValue(if (response.data.isEmpty()) Event(NoData)
+                        else Event(ShowData(response.data)))
+                    }
                 }
             }
         }
@@ -54,24 +50,6 @@ class SearchViewModel @ViewModelInject constructor(private val getBusiness: GetB
 
     fun updateSelectedLocation(location: String) {
         _selectedLocation.value = Event(location)
-    }
-
-    fun showLoading() {
-        _loadingVisibility.value = VISIBLE
-        _recyclerVisibility.value = GONE
-        _noDataVisibility.value = GONE
-    }
-
-    fun showData() {
-        _loadingVisibility.value = GONE
-        _recyclerVisibility.value = VISIBLE
-        _noDataVisibility.value = GONE
-    }
-
-    fun showNoData() {
-        _loadingVisibility.value = GONE
-        _recyclerVisibility.value = GONE
-        _noDataVisibility.value = VISIBLE
     }
 }
 

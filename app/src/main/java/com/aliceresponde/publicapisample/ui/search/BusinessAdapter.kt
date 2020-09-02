@@ -11,7 +11,10 @@ import com.aliceresponde.publicapisample.R
 import com.aliceresponde.publicapisample.databinding.BusinessItemBinding
 import com.aliceresponde.publicapisample.domain.Business
 
-class BusinessAdapter(private var data: MutableList<Business> = mutableListOf(), val callback: (Business) -> Unit) :
+class BusinessAdapter(
+    private var data: MutableList<Business> = mutableListOf(),
+    val callback: (Business) -> Unit
+) :
     RecyclerView.Adapter<BusinessAdapter.BusinessHolder>() {
 
     private val differCallback = object : DiffUtil.ItemCallback<Business>() {
@@ -23,7 +26,7 @@ class BusinessAdapter(private var data: MutableList<Business> = mutableListOf(),
             oldItem == newItem
     }
 
-    val differ = AsyncListDiffer(this, differCallback)
+    private val differ = AsyncListDiffer(this, differCallback)
 
     fun update(newBusinessList: List<Business>) {
         differ.submitList(newBusinessList)
@@ -39,7 +42,7 @@ class BusinessAdapter(private var data: MutableList<Business> = mutableListOf(),
     override fun onBindViewHolder(holder: BusinessHolder, position: Int) =
         holder.onBind(data[position])
 
-    override fun getItemCount(): Int = data.size
+    override fun getItemCount(): Int = differ.currentList.size
 
     inner class BusinessHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val binding = BusinessItemBinding.bind(itemView)
@@ -57,5 +60,4 @@ class BusinessAdapter(private var data: MutableList<Business> = mutableListOf(),
             }
         }
     }
-
 }
