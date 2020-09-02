@@ -1,13 +1,11 @@
 package com.aliceresponde.publicapisample.domain
 
 
-sealed class UiState<T>(
-    val data: T? = null,
-    val message: String? = null
-) {
-    companion object{
+sealed class UiState<out T> {
+    companion object {
         const val EMPTY_DATA_MESSAGE = "No Data Available to show"
     }
+
+    class SuccessViewState<out T>(val data: T) : UiState<T>()
+    class ErrorViewState<out T>(val message: String ="", val data: T? = null) : UiState<T>()
 }
-class SuccessViewState<T>(data: T) : UiState<T>(data)
-class ErrorViewState<T>(message: String, data: T? = null) : UiState<T>(data, message)

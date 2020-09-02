@@ -1,60 +1,82 @@
 package com.aliceresponde.publicapisample.ui.search
 
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aliceresponde.countingapp.presentation.common.Event
-import com.aliceresponde.publicapisample.data.remote.NetworkConnection
-import com.aliceresponde.publicapisample.databinding.BusinessItemBinding
 import com.aliceresponde.publicapisample.domain.Business
-import com.aliceresponde.publicapisample.domain.ErrorViewState
 import com.aliceresponde.publicapisample.domain.GetBusinessUseCase
-import com.aliceresponde.publicapisample.domain.SuccessViewState
+import com.aliceresponde.publicapisample.domain.UiState.ErrorViewState
+import com.aliceresponde.publicapisample.domain.UiState.SuccessViewState
 import com.aliceresponde.publicapisample.ui.search.SearchViewState.*
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class SearchViewModel @ViewModelInject constructor(
-    private val getBusiness: GetBusinessUseCase,
-    private val networkConnection: NetworkConnection
-) :
+class SearchViewModel @ViewModelInject constructor(private val getBusiness: GetBusinessUseCase) :
     ViewModel() {
-    private val _businessData = MutableLiveData<Event<List<BusinessItemBinding>>>()
-    val businessData: LiveData<Event<List<BusinessItemBinding>>> get() = _businessData
+    private val _businessData = MutableLiveData<Event<List<Business>>>()
+    val businessData: LiveData<Event<List<Business>>> get() = _businessData
 
-    private val _noDataVisibility = MutableLiveData<Int>()
-    val noDataVisibility: LiveData<Int> get() = _noDataVisibility
-
-    private val _connectionErrorVisibility = MutableLiveData<Int>()
-    val connectionErrorVisibility: LiveData<Int> get() = _connectionErrorVisibility
+    private val _selectedLocation = MutableLiveData<Event<String>>()
+    val selectedLocation: LiveData<Event<String>> get() = _selectedLocation
 
     private val _viewState = MutableLiveData<SearchViewState>()
     val viewState: LiveData<SearchViewState> get() = _viewState
 
+    private val _noDataVisibility = MutableLiveData(GONE)
+    val noDataVisibility: LiveData<Int> get() = _noDataVisibility
 
+    private val _recyclerVisibility = MutableLiveData(GONE)
+    val recyclerVisibility: LiveData<Int> get() = _recyclerVisibility
 
-    fun getBusiness(location: String) {
+    private val _loadingVisibility = MutableLiveData(GONE)
+    val loadingVisibility: LiveData<Int> get() = _loadingVisibility
+
+    fun getBusiness(location: String, isInternetConnected: Boolean) {
         viewModelScope.launch(Main) {
             _viewState.value = Loading
-            val response =
-                withContext(IO) { getBusiness.invoke(location, networkConnection.isConnected()) }
-            when (response) {
-                is SuccessViewState -> response.data?.let {
+            when (val response = getBusiness.invoke(location, isInternetConnected)) {
+                is SuccessViewState -> {
+                    _viewState.value =
+                        if (response.data.isEmpty()) NoData
+                        else ShowData(response.data)
+                }
+                is ErrorViewState -> response.data?.let {
                     _viewState.value = if (it.isEmpty()) NoData else ShowData(it)
                 }
-                is ErrorViewState -> _viewState.value = InternetError
             }
         }
+    }
+
+    fun updateSelectedLocation(location: String) {
+        _selectedLocation.value = Event(location)
+    }
+
+    fun showLoading() {
+        _loadingVisibility.value = VISIBLE
+        _recyclerVisibility.value = GONE
+        _noDataVisibility.value = GONE
+    }
+
+    fun showData() {
+        _loadingVisibility.value = GONE
+        _recyclerVisibility.value = VISIBLE
+        _noDataVisibility.value = GONE
+    }
+
+    fun showNoData() {
+        _loadingVisibility.value = GONE
+        _recyclerVisibility.value = GONE
+        _noDataVisibility.value = VISIBLE
     }
 }
 
 sealed class SearchViewState {
     object Loading : SearchViewState()
-    object InternetError : SearchViewState()
     object NoData : SearchViewState()
-    class ShowData(data: List<Business>) : SearchViewState()
+    class ShowData(val data: List<Business>) : SearchViewState()
 }

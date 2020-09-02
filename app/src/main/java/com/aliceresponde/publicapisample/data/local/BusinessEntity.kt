@@ -12,5 +12,5 @@ data class BusinessEntity(
     val address: String = "",
     val rating: Float = 0.0f,
     val isClosed: Boolean,
-    val locale: String
+    val location: String
 )

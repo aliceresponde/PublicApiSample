@@ -6,6 +6,7 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.annotation.ArrayRes
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -48,4 +49,10 @@ fun ImageView.loadFromUrl(url: String) {
             .transition(DrawableTransitionOptions.withCrossFade())
             .into(this)
     }
+}
+
+fun ImageView.loadFromDrawable( @DrawableRes res: Int){
+    Glide.with(this)
+        .load(res)
+        .into(this)
 }

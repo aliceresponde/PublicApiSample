@@ -87,10 +87,12 @@ class NetworkConnection(
         postValue(activeNetwork?.isConnected == true)
     }
 
-    @Throws(InterruptedException::class, IOException::class)
     fun isConnected(): Boolean {
         val command = "ping -c 1 google.com"
-        return Runtime.getRuntime().exec(command).waitFor() == 0
+        return try {
+            Runtime.getRuntime().exec(command).waitFor() == 0
+        } catch (e: Throwable) {
+            return false
+        }
     }
-
 }

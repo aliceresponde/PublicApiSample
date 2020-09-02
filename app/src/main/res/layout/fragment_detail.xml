@@ -24,7 +24,7 @@
             android:contentDescription="@null" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -46,7 +46,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView"
+            app:layout_constraintTop_toBottomOf="@+id/name"
             tools:text="San Francisco, CA 94105" />
 
         <TextView
@@ -70,7 +70,7 @@
             tools:text="4.0" />
 
         <ImageView
-            android:id="@+id/isOpen"
+            android:id="@+id/is_closed"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginTop="8dp"

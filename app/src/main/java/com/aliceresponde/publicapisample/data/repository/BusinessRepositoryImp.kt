@@ -1,10 +1,13 @@
 package com.aliceresponde.publicapisample.data.repository
 
+import android.util.Log
 import com.aliceresponde.publicapisample.data.datasource.LocalDataSource
 import com.aliceresponde.publicapisample.data.datasource.RemoteDataSource
 import com.aliceresponde.publicapisample.data.local.BusinessEntity
 import com.aliceresponde.publicapisample.data.remote.BusinessDTO
 import com.aliceresponde.publicapisample.data.remote.BusinessDetailResponse
+import com.aliceresponde.publicapisample.data.repository.DataState.ErrorState
+import com.aliceresponde.publicapisample.data.repository.DataState.SuccessState
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 
@@ -22,12 +25,18 @@ class BusinessRepositoryImp(
             } else {
                 val response = withContext(IO) { remote.getBusinessOn(location) }
                 return if (response.isSuccessful) {
-                    val result = response.body()?.business
-                    val entities = result?.map { it.toEntity() }
-                    entities?.let { local.insertAll(it) }
-                    SuccessState(getBusinessListFromCache(location))
+                    withContext(IO) {
+                        val result = response.body()?.businesses ?: listOf()
+                        val entities = result.map { dto -> dto.toEntity() }
+
+                        Log.d("TEST",local.insertAll(entities).toString())
+                        Log.d("Count", local.countItems(location).toString())
+                        val localData = getBusinessListFromCache(location)
+                        val i =3
+                        SuccessState(localData)
+                    }
                 } else {
-                    ErrorState(
+                    return ErrorState(
                         data = local.getBusinessByLocation(location),
                         message = DataState.INTERNET_FAILURE_DATA_MESSAGE
                     )
@@ -75,7 +84,7 @@ class BusinessRepositoryImp(
     }
 
     private suspend fun getBusinessListFromCache(locale: String): List<BusinessEntity> {
-        return withContext(IO) { local.getBusinessByLocation(locale) }
+        return local.getBusinessByLocation(locale)
     }
 
     private suspend fun getBusinessItemFromCache(id: String): BusinessEntity {
@@ -91,7 +100,7 @@ class BusinessRepositoryImp(
         address = location.toString(),
         rating = rating,
         isClosed = isClosed,
-        locale = location.country
+        location = location.country
     )
 
     private fun BusinessDetailResponse.toEntity(): BusinessEntity = BusinessEntity(
@@ -101,6 +110,6 @@ class BusinessRepositoryImp(
         phone = phone,
         rating = rating,
         isClosed = isClosed,
-        locale = location.country
+        location = location.country
     )
 }

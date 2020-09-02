@@ -5,5 +5,5 @@ import androidx.room.RoomDatabase
 
 @Database(entities = [BusinessEntity::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun getBusinessDao(): BusinessDao
+    abstract fun businessDao(): BusinessDao
 }

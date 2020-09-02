@@ -2,7 +2,7 @@ package com.aliceresponde.publicapisample.data.remote
 
 import com.google.gson.annotations.SerializedName
 
-data class BusinessResponse(val business: List<BusinessDTO>)
+data class BusinessResponse(val businesses: List<BusinessDTO>)
 
 data class BusinessDTO(
     val id: String,

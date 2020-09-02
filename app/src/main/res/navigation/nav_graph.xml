@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph.xml">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph.xml"
+    app:startDestination="@id/searchFragment">
+
+    <fragment
+        android:id="@+id/searchFragment"
+        tools:layout="@layout/fragment_search"
+        android:name="com.aliceresponde.publicapisample.ui.search.SearchFragment"
+        android:label="SearchFragment" >
+        <action
+            android:id="@+id/action_searchFragment_to_businessDetailFragment"
+            app:destination="@id/businessDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/businessDetailFragment"
+        tools:layout="@layout/fragment_detail"
+        android:name="com.aliceresponde.publicapisample.ui.detail.BusinessDetailFragment"
+        android:label="BusinessDetailFragment" >
+        <argument
+            android:name="item"
+            app:argType="com.aliceresponde.publicapisample.domain.Business" />
+    </fragment>
+
 
 </navigation>

@@ -8,4 +8,5 @@ interface LocalDataSource {
     suspend fun getBusinessDetail(id: String) : BusinessEntity
     suspend fun getBusinessByLocation(locale: String): List<BusinessEntity>
     suspend fun deleteAll()
+    suspend fun countItems(location: String): Int
 }

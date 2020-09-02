@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">PublicApiSample</string>
     <string name="sample_name"><![CDATA[1. Alchemist Bar & Laounge]]></string>
+    <string name="no_data_to_show">No data to show</string>
 
     <string-array name="locals_array">
         <item>Argentina</item>

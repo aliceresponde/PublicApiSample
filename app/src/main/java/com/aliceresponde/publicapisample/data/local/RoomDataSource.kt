@@ -5,7 +5,8 @@ import javax.inject.Inject
 
 class RoomDataSource @Inject constructor(private val db: AppDatabase): LocalDataSource {
 
-    private val dao = db.getBusinessDao()
+    private val dao = db.businessDao()
+
 
     override suspend fun insertAll(data: List<BusinessEntity>) {
         dao.insertAll(data)
@@ -19,11 +20,15 @@ class RoomDataSource @Inject constructor(private val db: AppDatabase): LocalData
         return dao.getBusinessById(id)
     }
 
-    override suspend fun getBusinessByLocation(locale: String): List<BusinessEntity> {
-        return dao.getBusinessByLocale(locale)
+    override suspend fun getBusinessByLocation(location: String): List<BusinessEntity> {
+        return dao.getBusinessByLocation(location)
     }
 
     override suspend fun deleteAll() {
         dao.deleteAllBusiness()
+    }
+
+    override suspend fun countItems(location: String): Int {
+        return dao.getCount(location)
     }
 }
